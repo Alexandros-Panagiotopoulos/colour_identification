@@ -16,9 +16,10 @@ def get_closest_colour(requested_colour):
 
 
 image = cv2.imread('images/test-sample-teal.png')
+image = cv2.resize(image, (1200, 600))
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-requested_colour = image[1000, 1000]
+requested_colour = image[500, 1000]
 print(get_closest_colour(requested_colour))
 
 # print("The type of this input is {}".format(type(image)))
