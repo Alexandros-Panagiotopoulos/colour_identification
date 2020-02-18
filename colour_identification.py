@@ -1,10 +1,10 @@
-import matplotlib.pyplot as plt
-import numpy as np
 import cv2
 import webcolors
+from collections import Counter
+from matplotlib import colors
 
-reduced_x_pixels = 10
-reduced_y_pixels = 5
+reduced_x_pixels = 100
+reduced_y_pixels = 100
 
 
 def get_closest_colour(requested_colour):
@@ -18,23 +18,23 @@ def get_closest_colour(requested_colour):
     return min_colours[min(min_colours.keys())]
 
 
-def get_colour_of_all_pixels(image):
+def calculate_dominant_colour_of_all_pixels(image):
     colours = []
     for i in range(reduced_x_pixels-1):
         for j in range(reduced_y_pixels-1):
             colours.append(get_closest_colour(image[j,i]))
-    return colours
+    counter = Counter(colours)
+    return max(counter, key=counter.get)
 
 
-image = cv2.imread('images/test-sample-teal.png')
+image = cv2.imread('images/colourful2.png')
 image = cv2.resize(image, (reduced_x_pixels, reduced_y_pixels))
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-all_pixels_colour = get_colour_of_all_pixels(image)
+dominant_colour = calculate_dominant_colour_of_all_pixels(image)
+print(webcolors.name_to_rgb(dominant_colour), dominant_colour)
 
-requested_colour = image[2, 5]
-print(get_closest_colour(requested_colour))
-print(all_pixels_colour)
-
+# requested_colour = image[2, 5]
+# print(get_closest_colour(requested_colour))
 # print("The type of this input is {}".format(type(image)))
 # print("Shape: {}".format(image.shape))
-# print(image[1000, 1000:1010])
+# print(image[50, 50])
