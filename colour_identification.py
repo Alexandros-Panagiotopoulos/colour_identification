@@ -3,6 +3,9 @@ import numpy as np
 import cv2
 import webcolors
 
+reduced_x_pixels = 10
+reduced_y_pixels = 5
+
 
 def get_closest_colour(requested_colour):
     min_colours = {}
@@ -15,12 +18,22 @@ def get_closest_colour(requested_colour):
     return min_colours[min(min_colours.keys())]
 
 
-image = cv2.imread('images/test-sample-teal.png')
-image = cv2.resize(image, (1200, 600))
-image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+def get_colour_of_all_pixels(image):
+    colours = []
+    for i in range(reduced_x_pixels-1):
+        for j in range(reduced_y_pixels-1):
+            colours.append(get_closest_colour(image[j,i]))
+    return colours
 
-requested_colour = image[500, 1000]
+
+image = cv2.imread('images/test-sample-teal.png')
+image = cv2.resize(image, (reduced_x_pixels, reduced_y_pixels))
+image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+all_pixels_colour = get_colour_of_all_pixels(image)
+
+requested_colour = image[2, 5]
 print(get_closest_colour(requested_colour))
+print(all_pixels_colour)
 
 # print("The type of this input is {}".format(type(image)))
 # print("Shape: {}".format(image.shape))
