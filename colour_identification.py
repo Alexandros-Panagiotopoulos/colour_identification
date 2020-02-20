@@ -10,10 +10,10 @@ predefined_colours = [
     {"key": "teal", "red": 0, "green": 128, "blue": 128},
     {"key": "silver", "red": 192, "green": 192, "blue": 192},
 ]
-reduced_x_pixels = 100
+reduced_x_pixels = 100          #controls the size of the pixels sample that handled and speed of code
 reduced_y_pixels = 100
-max_dist_squared = 160000
-match_factor = 0.1
+max_dist_squared = 255**2*3     #maximum squared distance between two corners of rgb space
+match_factor = 0.01             #the lower the factor the closer match is demanded
 
 
 def get_closest_colour_from_CSS3_colours(requested_colour):
@@ -29,6 +29,7 @@ def get_closest_colour_from_CSS3_colours(requested_colour):
         return None
     return min_colours[min_dist]
 
+
 def get_closest_colour_from_predefined_colours(requested_colour):
     min_colours = {}
     for predefined_colour in predefined_colours:
@@ -38,7 +39,7 @@ def get_closest_colour_from_predefined_colours(requested_colour):
         bd = (b_c - requested_colour[2]) ** 2
         min_colours[(rd + gd + bd)] = predefined_colour["key"]
     min_dist = min(min_colours.keys())
-    if min_dist > (max_dist_squared * match_factor):
+    if min_dist > (max_dist_squared * match_factor):    #if there is no close matched colour it returns None
         return None
     return min_colours[min_dist]
 
@@ -49,13 +50,11 @@ def calculate_dominant_colour_of_all_pixels(image):
         for j in range(reduced_y_pixels-1):
             colours.append(get_closest_colour_from_predefined_colours(image[j,i]))
     counter = Counter(colours)
-    return max(counter, key=counter.get)
+    return max(counter, key=counter.get)        #returns the colour with most pixels or None if most pixels has no close matched colour
 
 
-
-image = cv2.imread('images/test-sample-teal.png')
+image = cv2.imread('images/test-sample-grey.png')
 image = cv2.resize(image, (reduced_x_pixels, reduced_y_pixels))
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 dominant_colour = calculate_dominant_colour_of_all_pixels(image)
 print(dominant_colour)
-# print(image[50, 50:55])
