@@ -1,19 +1,17 @@
+import numpy as np
 import cv2
+import urllib.request
 import webcolors
 from collections import Counter
+import requests
+import ast
 
-predefined_colours = [
-    {"key": "black", "red": 0, "green": 0, "blue": 0},
-    {"key": "white", "red": 255, "green": 255, "blue": 255},
-    {"key": "grey", "red": 85, "green": 85, "blue": 85},
-    {"key": "Navy", "red": 0, "green": 0, "blue": 128},
-    {"key": "teal", "red": 0, "green": 128, "blue": 128},
-    {"key": "silver", "red": 192, "green": 192, "blue": 192},
-]
+with open('predefined_colours.txt', 'r') as file_object:
+    predefined_colours = ast.literal_eval(file_object.read())  # read predefined colours as a list of dicts
 reduced_x_pixels = 100          #controls the size of the pixels sample that handled and speed of code
 reduced_y_pixels = 100
 max_dist_squared = 255**2*3     #maximum squared distance between two corners of rgb space
-match_factor = 0.01             #the lower the factor the closer match is demanded
+match_factor = 0.02             #the lower the factor the closer match is demanded
 
 
 def get_closest_colour_from_CSS3_colours(requested_colour):
@@ -52,8 +50,10 @@ def calculate_dominant_colour_of_all_pixels(image):
     counter = Counter(colours)
     return max(counter, key=counter.get)        #returns the colour with most pixels or None if most pixels has no close matched colour
 
-
-image = cv2.imread('images/test-sample-grey.png')
+url = "https://pwintyimages.blob.core.windows.net/samples/stars/test-sample-teal.png"
+response = urllib.request.urlopen(url)
+image = np.asarray(bytearray(response.read()), dtype="uint8")
+image = cv2.imdecode(image, cv2.IMREAD_COLOR)
 image = cv2.resize(image, (reduced_x_pixels, reduced_y_pixels))
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 dominant_colour = calculate_dominant_colour_of_all_pixels(image)
